@@ -1,0 +1,379 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum RoleCode {
+  PATIENT
+  DOCTOR
+  ADMIN
+  SUPPORT
+}
+
+enum DoctorVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum AvailabilitySlotStatus {
+  AVAILABLE
+  RESERVED
+  BLOCKED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentProvider {
+  STRIPE
+  RAZORPAY
+  MOCK
+}
+
+enum AuditActionType {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  BOOK
+  CANCEL
+  RESCHEDULE
+  START_CONSULTATION
+  END_CONSULTATION
+  ISSUE_PRESCRIPTION
+  PAYMENT_INITIATED
+  PAYMENT_CAPTURED
+  PAYMENT_FAILED
+  MFA_ENABLED
+  MFA_DISABLED
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  MFA_CHALLENGE
+}
+
+enum IdempotencyStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+model User {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  phone           String?    @unique
+  passwordHash    String
+  status          UserStatus @default(PENDING_VERIFICATION)
+  isEmailVerified Boolean    @default(false)
+  isPhoneVerified Boolean    @default(false)
+  mfaEnabled      Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  profile           Profile?
+  doctor            Doctor?
+  userRoles         UserRole[]
+  bookingsAsPatient Booking[]        @relation("PatientBookings")
+  auditLogs         AuditLog[]
+  refreshTokens     RefreshToken[]
+  idempotencyKeys   IdempotencyKey[]
+  consultations     Consultation[]
+  prescriptions     Prescription[]
+
+  @@index([status])
+  @@map("users")
+}
+
+model Profile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  firstName    String
+  lastName     String
+  dateOfBirth  DateTime?
+  gender       String?
+  avatarUrl    String?
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  country      String?
+  postalCode   String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([lastName, firstName])
+  @@map("profiles")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  code        RoleCode @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  userRoles UserRole[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([roleId])
+  @@map("user_roles")
+}
+
+model Doctor {
+  id                 String                   @id @default(uuid())
+  userId             String                   @unique
+  registrationNumber String                   @unique
+  specialization     String
+  yearsOfExperience  Int                      @default(0)
+  consultationFee    Decimal                  @db.Decimal(10, 2)
+  verificationStatus DoctorVerificationStatus @default(PENDING)
+  bio                String?
+  languages          String[]
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availabilitySlots AvailabilitySlot[]
+  bookings          Booking[]
+  consultations     Consultation[]
+  prescriptions     Prescription[]
+
+  @@index([specialization])
+  @@index([verificationStatus])
+  @@map("doctors")
+}
+
+model AvailabilitySlot {
+  id            String                 @id @default(uuid())
+  doctorId      String
+  startTime     DateTime
+  endTime       DateTime
+  status        AvailabilitySlotStatus @default(AVAILABLE)
+  isLocked      Boolean                @default(false)
+  lockExpiresAt DateTime?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  doctor  Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  booking Booking?
+
+  @@unique([doctorId, startTime, endTime])
+  @@index([doctorId, startTime])
+  @@index([doctorId, status, startTime])
+  @@map("availability_slots")
+}
+
+model Booking {
+  id                 String        @id @default(uuid())
+  patientId          String
+  doctorId           String
+  availabilitySlotId String?       @unique
+  status             BookingStatus @default(PENDING)
+  reason             String?
+  notes              String?
+  scheduledStart     DateTime
+  scheduledEnd       DateTime
+  cancelledAt        DateTime?
+  cancelledReason    String?
+  rescheduledFromId  String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  patient          User              @relation("PatientBookings", fields: [patientId], references: [id], onDelete: Restrict)
+  doctor           Doctor            @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  availabilitySlot AvailabilitySlot? @relation(fields: [availabilitySlotId], references: [id], onDelete: SetNull)
+  consultation     Consultation?
+  payment          Payment?
+  previousBooking  Booking?          @relation("BookingReschedule", fields: [rescheduledFromId], references: [id], onDelete: SetNull)
+  nextBookings     Booking[]         @relation("BookingReschedule")
+
+  @@index([patientId, status])
+  @@index([patientId, scheduledStart])
+  @@index([doctorId, status, scheduledStart])
+  @@index([scheduledStart, status])
+  @@map("bookings")
+}
+
+model Consultation {
+  id               String             @id @default(uuid())
+  bookingId        String             @unique
+  doctorId         String
+  patientId        String
+  status           ConsultationStatus @default(SCHEDULED)
+  startedAt        DateTime?
+  endedAt          DateTime?
+  meetingProvider  String?
+  meetingUrl       String?
+  notes            String?
+  diagnosisSummary String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  booking      Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  doctor       Doctor        @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  patient      User          @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  prescription Prescription?
+
+  @@index([doctorId, status])
+  @@index([patientId, status])
+  @@map("consultations")
+}
+
+model Prescription {
+  id              String   @id @default(uuid())
+  consultationId  String   @unique
+  doctorId        String
+  patientId       String
+  medicationsJson Json
+  instructions    String?
+  issuedAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  consultation Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+  doctor       Doctor       @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  patient      User         @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  @@index([doctorId, issuedAt])
+  @@index([patientId, issuedAt])
+  @@map("prescriptions")
+}
+
+model Payment {
+  id            String          @id @default(uuid())
+  bookingId     String          @unique
+  provider      PaymentProvider
+  providerRef   String?
+  amount        Decimal         @db.Decimal(10, 2)
+  currency      String          @default("INR")
+  status        PaymentStatus   @default(PENDING)
+  failureReason String?
+  paidAt        DateTime?
+  refundedAt    DateTime?
+  metadata      Json?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, providerRef])
+  @@index([status, createdAt])
+  @@index([provider, status])
+  @@map("payments")
+}
+
+model AuditLog {
+  id           String          @id @default(uuid())
+  actorUserId  String?
+  actionType   AuditActionType
+  resourceType String
+  resourceId   String?
+  ipAddress    String?
+  userAgent    String?
+  metadata     Json?
+  createdAt    DateTime        @default(now())
+
+  actorUser User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId, createdAt])
+  @@index([resourceType, resourceId])
+  @@index([actionType, createdAt])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model IdempotencyKey {
+  id             String            @id @default(uuid())
+  key            String
+  userId         String?
+  scope          String
+  requestHash    String
+  status         IdempotencyStatus @default(IN_PROGRESS)
+  responseStatus Int?
+  responseBody   Json?
+  lockedUntil    DateTime?
+  expiresAt      DateTime
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([scope, key])
+  @@index([userId, scope])
+  @@index([lockedUntil])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  tokenType TokenType @default(REFRESH)
+  expiresAt DateTime
+  revokedAt DateTime?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@map("refresh_tokens")
+}

@@ -1,0 +1,599 @@
+﻿
+============================================================
+AMRUTAM PROJECT AUDIT
+============================================================
+Generated: 2026-09-19T21:52:54.8251118+05:30
+Project root: A:\amrutam backend
+Computer: AKSHAT
+
+============================================================
+TOOL VERSIONS
+============================================================
+Node: v22.18.0
+npm: 10.9.3
+Git: git version 2.49.0.windows.1
+Docker: Docker version 29.6.2, build dfc4efb
+Docker Compose: Docker Compose version v5.3.1
+
+============================================================
+GIT STATUS
+============================================================
+git : fatal: not a git repository (or any of the parent directories): .git
+At line:41 char:5
++     git status --short --branch
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (fatal: not a gi...ectories): .git:String) [ 
+   ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+============================================================
+RECENT COMMITS
+============================================================
+git : fatal: not a git repository (or any of the parent directories): .git
+At line:45 char:5
++     git log --oneline --decorate -15
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (fatal: not a gi...ectories): .git:String) [ 
+   ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+============================================================
+PROJECT FILE STRUCTURE
+============================================================
+[DIR]  docs
+[DIR]  prisma
+[DIR]  src
+[FILE] .editorconfig
+[FILE] .env
+[FILE] .env.example
+[FILE] .gitignore
+[FILE] .nvmrc
+[FILE] .prettierrc
+[FILE] docker-compose.yml
+[FILE] Dockerfile
+[FILE] eslint.config.mjs
+[FILE] nest-cli.json
+[FILE] package.json
+[FILE] pnpm-lock.yaml
+[FILE] project-audit.txt
+[FILE] README.md
+[FILE] review-pack.txt
+[FILE] tsconfig.build.json
+[FILE] tsconfig.json
+[DIR]  docs\adr
+[FILE] docs\adr\ADR-001-architecture.md
+[FILE] docs\adr\ADR-002-tech-stack.md
+[DIR]  prisma\migrations
+[FILE] prisma\schema.prisma
+[FILE] prisma\seed.ts
+[DIR]  prisma\migrations\20260919142754_init_core_schema
+[DIR]  prisma\migrations\20260919145337_harden_core_schema
+[FILE] prisma\migrations\migration_lock.toml
+[FILE] prisma\migrations\20260919142754_init_core_schema\migration.sql
+[FILE] prisma\migrations\20260919145337_harden_core_schema\migration.sql
+[DIR]  src\config
+[DIR]  src\modules
+[DIR]  src\platform
+[DIR]  src\shared
+[FILE] src\app.module.ts
+[FILE] src\main.ts
+[FILE] src\config\configuration.ts
+[FILE] src\config\env.schema.ts
+[FILE] src\config\index.ts
+[DIR]  src\modules\auth
+[DIR]  src\modules\users
+[DIR]  src\modules\auth\application
+[DIR]  src\modules\auth\domain
+[DIR]  src\modules\auth\infrastructure
+[DIR]  src\modules\auth\presentation
+[FILE] src\modules\auth\auth.module.ts
+[FILE] src\modules\auth\application\auth.service.ts
+[FILE] src\modules\auth\application\password.service.ts
+[FILE] src\modules\auth\application\refresh-token.service.ts
+[FILE] src\modules\auth\application\token.service.ts
+[FILE] src\modules\auth\domain\auth.repository.ts
+[FILE] src\modules\auth\domain\auth.types.ts
+[DIR]  src\modules\auth\infrastructure\repositories
+[FILE] src\modules\auth\infrastructure\repositories\prisma-auth.repository.ts
+[FILE] src\modules\auth\presentation\auth.controller.ts
+[DIR]  src\modules\users\application
+[DIR]  src\modules\users\domain
+[DIR]  src\modules\users\infrastructure
+[FILE] src\modules\users\users.module.ts
+[FILE] src\modules\users\application\users.service.ts
+[FILE] src\modules\users\domain\user.repository.ts
+[DIR]  src\modules\users\infrastructure\repositories
+[FILE] src\modules\users\infrastructure\repositories\prisma-user.repository.ts
+[DIR]  src\platform\cache
+[DIR]  src\platform\database
+[DIR]  src\platform\docs
+[DIR]  src\platform\health
+[DIR]  src\platform\logger
+[DIR]  src\platform\observability
+[FILE] src\platform\cache\redis.module.ts
+[FILE] src\platform\cache\redis.service.ts
+[DIR]  src\platform\database\prisma
+[FILE] src\platform\database\prisma\prisma.module.ts
+[FILE] src\platform\database\prisma\prisma.service.ts
+[FILE] src\platform\docs\swagger.ts
+[FILE] src\platform\health\health.controller.ts
+[FILE] src\platform\health\health.module.ts
+[FILE] src\platform\health\health.service.ts
+[FILE] src\platform\logger\logger.module.ts
+[FILE] src\platform\logger\logger.service.ts
+[FILE] src\platform\observability\metrics.service.ts
+[FILE] src\platform\observability\observability.module.ts
+[FILE] src\platform\observability\tracing.ts
+[DIR]  src\shared\constants
+[DIR]  src\shared\decorators
+[DIR]  src\shared\filters
+[DIR]  src\shared\guards
+[DIR]  src\shared\middleware
+[DIR]  src\shared\pipes
+[DIR]  src\shared\tokens
+[DIR]  src\shared\types
+[FILE] src\shared\constants\app.constants.ts
+[FILE] src\shared\decorators\current-user.decorator.ts
+[FILE] src\shared\decorators\roles.decorator.ts
+[FILE] src\shared\filters\global-exception.filter.ts
+[FILE] src\shared\guards\jwt-auth.guard.ts
+[FILE] src\shared\guards\roles.guard.ts
+[FILE] src\shared\middleware\request-id.middleware.ts
+[FILE] src\shared\pipes\validation.pipe.ts
+[FILE] src\shared\tokens\index.ts
+[FILE] src\shared\types\auth-user.type.ts
+
+============================================================
+FILE: package.json
+============================================================
+{
+    "name": "amrutam-backend",
+    "version": "1.0.0",
+    "private": true,
+    "license": "UNLICENSED",
+    "scripts": {
+        "build": "nest build",
+        "start": "nest start",
+        "start:dev": "nest start --watch",
+        "start:debug": "nest start --debug --watch",
+        "start:prod": "node dist/main",
+        "lint": "eslint \"{src,test}/**/*.ts\" --fix",
+        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+        "test": "vitest",
+        "test:watch": "vitest --watch",
+        "test:cov": "vitest --coverage",
+        "prisma:generate": "prisma generate",
+        "db:seed": "prisma db seed"
+    },
+    "dependencies": {
+        "@fastify/cors": "^10.0.1",
+        "@fastify/helmet": "^13.0.1",
+        "@fastify/rate-limit": "^10.3.0",
+        "@fastify/static": "^10.1.4",
+        "@fastify/view": "^12.0.0",
+        "@nestjs/common": "^11.0.1",
+        "@nestjs/config": "^4.0.2",
+        "@nestjs/core": "^11.0.1",
+        "@nestjs/jwt": "^11.0.0",
+        "@nestjs/platform-fastify": "^11.0.1",
+        "@nestjs/swagger": "^11.0.3",
+        "@opentelemetry/api": "^1.9.0",
+        "@opentelemetry/auto-instrumentations-node": "^0.57.0",
+        "@opentelemetry/sdk-node": "^0.57.2",
+        "@prisma/client": "^6.6.0",
+        "bcrypt": "^5.1.1",
+        "bullmq": "^5.18.1",
+        "fastify": "^5.0.0",
+        "ioredis": "^5.4.1",
+        "nestjs-pino": "^4.1.0",
+        "pino": "^9.4.0",
+        "pino-pretty": "^11.2.2",
+        "prisma": "^6.6.0",
+        "prom-client": "^15.1.3",
+        "reflect-metadata": "^0.2.2",
+        "rxjs": "^7.8.1",
+        "uuid": "^11.0.3",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@nestjs/cli": "^11.0.0",
+        "@nestjs/schematics": "^11.0.0",
+        "@nestjs/testing": "^11.0.1",
+        "@types/bcrypt": "^5.0.2",
+        "@types/node": "^22.10.1",
+        "@types/supertest": "^6.0.2",
+        "eslint": "^9.17.0",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-import": "^2.31.0",
+        "prettier": "^3.4.2",
+        "supertest": "^7.0.0",
+        "ts-node": "^10.9.2",
+        "tsup": "^8.3.5",
+        "typescript": "^5.7.2",
+        "vitest": "^2.1.8"
+    },
+    "prisma": {
+        "seed": "ts-node prisma/seed.ts"
+    },
+    "packageManager": "pnpm@9.15.0"
+}
+
+============================================================
+FILE: tsconfig.json
+============================================================
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2022",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "incremental": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "lib": [
+            "ES2022"
+        ],
+        "types": [
+            "node"
+        ]
+    }
+}
+
+============================================================
+FILE: tsconfig.build.json
+============================================================
+{
+    "extends": "./tsconfig.json",
+    "exclude": [
+        "node_modules",
+        "dist",
+        "test",
+        "**/*spec.ts"
+    ]
+}
+
+============================================================
+FILE: Dockerfile
+============================================================
+FROM node:22-alpine AS base
+WORKDIR /app
+COPY package.json pnpm-lock.yaml* ./
+RUN corepack enable && pnpm install
+
+FROM base AS build
+COPY . .
+RUN pnpm build
+
+FROM node:22-alpine AS runtime
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/prisma ./prisma
+EXPOSE 3000
+CMD ["node", "dist/main.js"]
+
+============================================================
+FILE: docker-compose.yml
+============================================================
+services:
+  postgres:
+    image: postgres:16
+    container_name: amrutam-postgres
+    environment:
+      POSTGRES_USER: amrutam
+      POSTGRES_PASSWORD: amrutam
+      POSTGRES_DB: amrutam
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U amrutam -d amrutam" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: amrutam-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.57
+    container_name: amrutam-jaeger
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: amrutam-prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: amrutam-grafana
+    ports:
+      - "3001:3000"
+
+  app:
+    build: .
+    container_name: amrutam-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  redis_data:
+
+============================================================
+FILE: .gitignore
+============================================================
+node_modules
+dist
+.git
+.env
+coverage
+.pnpm-store
+*.log
+review-pack.txt
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+
+============================================================
+FILE: eslint.config.mjs
+============================================================
+
+============================================================
+FILE: .prettierrc
+============================================================
+{
+  "singleQuote": true,
+  "semi": true,
+  "trailingComma": "all"
+}
+
+============================================================
+ENVIRONMENT VARIABLE NAMES ONLY
+============================================================
+Source: .env.example
+JWT_ACCESS_SECRET=<REDACTED>
+JWT_REFRESH_SECRET=<REDACTED>
+JWT_ACCESS_TTL=<REDACTED>
+JWT_REFRESH_TTL_DAYS=<REDACTED>
+BCRYPT_ROUNDS=<REDACTED>
+
+============================================================
+AVAILABLE NPM SCRIPTS
+============================================================
+Lifecycle scripts included in amrutam-backend@1.0.0:
+  start
+    nest start
+  test
+    vitest
+available via `npm run-script`:
+  build
+    nest build
+  start:dev
+    nest start --watch
+  start:debug
+    nest start --debug --watch
+  start:prod
+    node dist/main
+  lint
+    eslint "{src,test}/**/*.ts" --fix
+  format
+    prettier --write "src/**/*.ts" "test/**/*.ts"
+  test:watch
+    vitest --watch
+  test:cov
+    vitest --coverage
+  prisma:generate
+    prisma generate
+  db:seed
+    prisma db seed
+
+============================================================
+INSTALLED TOP-LEVEL DEPENDENCIES
+============================================================
+amrutam-backend@1.0.0 A:\amrutam backend
+Γö£ΓöÇΓöÇ @eslint-community/eslint-utils@4.10.1 extraneous -> .\node_modules\.pnpm\@eslint-community+eslint-utils@4.10.1_eslint@9.39.5_jiti@2.7.0_\node_modules\@eslint-community\eslint-utils
+Γö£ΓöÇΓöÇ @eslint-community/regexpp@4.12.2 extraneous -> .\node_modules\.pnpm\@eslint-community+regexpp@4.12.2\node_modules\@eslint-community\regexpp
+Γö£ΓöÇΓöÇ @eslint/config-array@0.21.2 extraneous -> .\node_modules\.pnpm\@eslint+config-array@0.21.2\node_modules\@eslint\config-array
+Γö£ΓöÇΓöÇ @eslint/config-helpers@0.4.2 extraneous -> .\node_modules\.pnpm\@eslint+config-helpers@0.4.2\node_modules\@eslint\config-helpers
+Γö£ΓöÇΓöÇ @eslint/core@0.17.0 extraneous -> .\node_modules\.pnpm\@eslint+core@0.17.0\node_modules\@eslint\core
+Γö£ΓöÇΓöÇ @eslint/object-schema@2.1.7 extraneous -> .\node_modules\.pnpm\@eslint+object-schema@2.1.7\node_modules\@eslint\object-schema
+Γö£ΓöÇΓöÇ @eslint/plugin-kit@0.4.1 extraneous -> .\node_modules\.pnpm\@eslint+plugin-kit@0.4.1\node_modules\@eslint\plugin-kit
+Γö£ΓöÇΓöÇ @fastify/cors@10.1.0 -> .\node_modules\.pnpm\@fastify+cors@10.1.0\node_modules\@fastify\cors
+Γö£ΓöÇΓöÇ @fastify/helmet@13.1.1 -> .\node_modules\.pnpm\@fastify+helmet@13.1.1\node_modules\@fastify\helmet
+Γö£ΓöÇΓöÇ @fastify/rate-limit@10.3.0 -> .\node_modules\.pnpm\@fastify+rate-limit@10.3.0\node_modules\@fastify\rate-limit
+Γö£ΓöÇΓöÇ @fastify/static@10.1.4 -> .\node_modules\.pnpm\@fastify+static@10.1.4\node_modules\@fastify\static
+Γö£ΓöÇΓöÇ @fastify/view@12.0.0 -> .\node_modules\.pnpm\@fastify+view@12.0.0\node_modules\@fastify\view
+Γö£ΓöÇΓöÇ @nestjs/cli@11.0.24 -> .\node_modules\.pnpm\@nestjs+cli@11.0.24_@types+node@22.20.4_esbuild@0.27.7_postcss@8.5.28_prettier@3.9.8\node_modules\@nestjs\cli
+Γö£ΓöÇΓöÇ @nestjs/common@11.2.5 -> .\node_modules\.pnpm\@nestjs+common@11.2.5_reflect-metadata@0.2.2_rxjs@7.8.2\node_modules\@nestjs\common
+Γö£ΓöÇΓöÇ @nestjs/config@4.0.4 -> .\node_modules\.pnpm\@nestjs+config@4.0.4_@nestjs+common@11.2.5_reflect-metadata@0.2.2_rxjs@7.8.2__rxjs@7.8.2\node_modules\@nestjs\config
+Γö£ΓöÇΓöÇ @nestjs/core@11.2.5 -> .\node_modules\.pnpm\@nestjs+core@11.2.5_@nestjs+common@11.2.5_reflect-metadata@0.2.2_rxjs@7.8.2__reflect-metadata@0.2.2_rxjs@7.8.2\node_modules\@nestjs\core
+Γö£ΓöÇΓöÇ @nestjs/jwt@11.0.2 -> .\node_modules\.pnpm\@nestjs+jwt@11.0.2_@nestjs+common@11.2.5_reflect-metadata@0.2.2_rxjs@7.8.2_\node_modules\@nestjs\jwt
+Γö£ΓöÇΓöÇ @nestjs/platform-fastify@11.2.5 -> .\node_modules\.pnpm\@nestjs+platform-fastify@11.2.5_@fastify+static@10.1.4_@fastify+view@12.0.0_@nestjs+common@11_d4oirhvnbheijfpsxfl6jaitwm\node_modules\@nestjs\platform-fastify
+Γö£ΓöÇΓöÇ @nestjs/schematics@11.1.0 -> .\node_modules\.pnpm\@nestjs+schematics@11.1.0_chokidar@4.0.3_prettier@3.9.8_typescript@5.9.3\node_modules\@nestjs\schematics
+Γö£ΓöÇΓöÇ @nestjs/swagger@11.4.7 -> .\node_modules\.pnpm\@nestjs+swagger@11.4.7_@fastify+static@10.1.4_@nestjs+common@11.2.5_reflect-metadata@0.2.2_rx_pkxccz5vurgl6ywqdijj6xpg4y\node_modules\@nestjs\swagger
+Γö£ΓöÇΓöÇ @nestjs/testing@11.2.5 -> .\node_modules\.pnpm\@nestjs+testing@11.2.5_@nestjs+common@11.2.5_reflect-metadata@0.2.2_rxjs@7.8.2__@nestjs+core@_t4aqkxwuyat3estfwalqbocice\node_modules\@nestjs\testing
+Γö£ΓöÇΓöÇ @opentelemetry/api@1.9.1 -> .\node_modules\.pnpm\@opentelemetry+api@1.9.1\node_modules\@opentelemetry\api
+Γö£ΓöÇΓöÇ @opentelemetry/auto-instrumentations-node@0.57.1 -> .\node_modules\.pnpm\@opentelemetry+auto-instrumentations-node@0.57.1_@opentelemetry+api@1.9.1_@opentelemetry+core_wlkkygl63sriyukua5tkuvdwpi\node_modules\@opentelemetry\auto-instrumentations-node
+Γö£ΓöÇΓöÇ @opentelemetry/sdk-node@0.57.2 -> .\node_modules\.pnpm\@opentelemetry+sdk-node@0.57.2_@opentelemetry+api@1.9.1\node_modules\@opentelemetry\sdk-node
+Γö£ΓöÇΓöÇ @prisma/client@6.19.3 -> .\node_modules\.pnpm\@prisma+client@6.19.3_prisma@6.19.3_typescript@5.9.3__typescript@5.9.3\node_modules\@prisma\client
+Γö£ΓöÇΓöÇ @types/bcrypt@5.0.2 -> .\node_modules\.pnpm\@types+bcrypt@5.0.2\node_modules\@types\bcrypt
+Γö£ΓöÇΓöÇ @types/eslint-scope@3.7.7 extraneous -> .\node_modules\.pnpm\@types+eslint-scope@3.7.7\node_modules\@types\eslint-scope
+Γö£ΓöÇΓöÇ @types/node@22.20.4 -> .\node_modules\.pnpm\@types+node@22.20.4\node_modules\@types\node
+Γö£ΓöÇΓöÇ @types/supertest@6.0.3 -> .\node_modules\.pnpm\@types+supertest@6.0.3\node_modules\@types\supertest
+Γö£ΓöÇΓöÇ bcrypt@5.1.1 -> .\node_modules\.pnpm\bcrypt@5.1.1\node_modules\bcrypt
+Γö£ΓöÇΓöÇ bullmq@5.81.5 -> .\node_modules\.pnpm\bullmq@5.81.5\node_modules\bullmq
+Γö£ΓöÇΓöÇ eslint-config-prettier@10.1.8 -> .\node_modules\.pnpm\eslint-config-prettier@10.1.8_eslint@9.39.5_jiti@2.7.0_\node_modules\eslint-config-prettier
+Γö£ΓöÇΓöÇ eslint-import-resolver-node@0.3.10 extraneous -> .\node_modules\.pnpm\eslint-import-resolver-node@0.3.10\node_modules\eslint-import-resolver-node
+Γö£ΓöÇΓöÇ eslint-module-utils@2.14.0 extraneous -> .\node_modules\.pnpm\eslint-module-utils@2.14.0_eslint-import-resolver-node@0.3.10_eslint@9.39.5_jiti@2.7.0_\node_modules\eslint-module-utils
+Γö£ΓöÇΓöÇ eslint-plugin-import@2.32.0 -> .\node_modules\.pnpm\eslint-plugin-import@2.32.0_eslint@9.39.5_jiti@2.7.0_\node_modules\eslint-plugin-import
+Γö£ΓöÇΓöÇ eslint-scope@8.4.0 extraneous -> .\node_modules\.pnpm\eslint-scope@8.4.0\node_modules\eslint-scope
+Γö£ΓöÇΓöÇ eslint@9.39.5 -> .\node_modules\.pnpm\eslint@9.39.5_jiti@2.7.0\node_modules\eslint
+Γö£ΓöÇΓöÇ fastify@5.12.5 -> .\node_modules\.pnpm\fastify@5.12.5\node_modules\fastify
+Γö£ΓöÇΓöÇ ioredis@5.11.1 -> .\node_modules\.pnpm\ioredis@5.11.1\node_modules\ioredis
+Γö£ΓöÇΓöÇ nestjs-pino@4.6.1 -> .\node_modules\.pnpm\nestjs-pino@4.6.1_@nestjs+common@11.2.5_reflect-metadata@0.2.2_rxjs@7.8.2__pino-http@11.0.0_pino@9.14.0_rxjs@7.8.2\node_modules\nestjs-pino
+Γö£ΓöÇΓöÇ pino-pretty@11.3.0 -> .\node_modules\.pnpm\pino-pretty@11.3.0\node_modules\pino-pretty
+Γö£ΓöÇΓöÇ pino@9.14.0 -> .\node_modules\.pnpm\pino@9.14.0\node_modules\pino
+Γö£ΓöÇΓöÇ prettier@3.9.8 -> .\node_modules\.pnpm\prettier@3.9.8\node_modules\prettier
+Γö£ΓöÇΓöÇ prisma@6.19.3 -> .\node_modules\.pnpm\prisma@6.19.3_typescript@5.9.3\node_modules\prisma
+Γö£ΓöÇΓöÇ prom-client@15.1.3 -> .\node_modules\.pnpm\prom-client@15.1.3\node_modules\prom-client
+Γö£ΓöÇΓöÇ reflect-metadata@0.2.2 -> .\node_modules\.pnpm\reflect-metadata@0.2.2\node_modules\reflect-metadata
+Γö£ΓöÇΓöÇ rxjs@7.8.2 -> .\node_modules\.pnpm\rxjs@7.8.2\node_modules\rxjs
+Γö£ΓöÇΓöÇ supertest@7.2.2 -> .\node_modules\.pnpm\supertest@7.2.2\node_modules\supertest
+Γö£ΓöÇΓöÇ ts-node@10.9.2 -> .\node_modules\.pnpm\ts-node@10.9.2_@types+node@22.20.4_typescript@5.9.3\node_modules\ts-node
+Γö£ΓöÇΓöÇ tsup@8.5.1 -> .\node_modules\.pnpm\tsup@8.5.1_jiti@2.7.0_postcss@8.5.28_typescript@5.9.3\node_modules\tsup
+Γö£ΓöÇΓöÇ typescript@5.9.3 -> .\node_modules\.pnpm\typescript@5.9.3\node_modules\typescript
+Γö£ΓöÇΓöÇ uuid@11.1.1 -> .\node_modules\.pnpm\uuid@11.1.1\node_modules\uuid
+Γö£ΓöÇΓöÇ vitest@2.1.9 -> .\node_modules\.pnpm\vitest@2.1.9_@types+node@22.20.4_terser@5.51.2\node_modules\vitest
+ΓööΓöÇΓöÇ zod@3.25.76 -> .\node_modules\.pnpm\zod@3.25.76\node_modules\zod
+
+
+============================================================
+DOCKER COMPOSE STATUS
+============================================================
+NAME               IMAGE         COMMAND                  SERVICE    CREATED       STATUS                 PORTS
+amrutam-postgres   postgres:16   "docker-entrypoint.sΓÇª"   postgres   2 hours ago   Up 2 hours (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+amrutam-redis      redis:7       "docker-entrypoint.sΓÇª"   redis      2 hours ago   Up 2 hours (healthy)   0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+
+============================================================
+HEALTH CHECK
+============================================================
+Health check failed: Unable to connect to the remote server
+
+============================================================
+LINT RESULT
+============================================================
+
+> amrutam-backend@1.0.0 lint
+> eslint "{src,test}/**/*.ts" --fix
+
+node.exe : (node:28388) ESLintEmptyConfigWarning: Running ESLint with an empty config 
+(from A:\amrutam backend\eslint.config.mjs). Please double-check that this is what you 
+want. If you want to run ESLint with an empty config, export [{}] to remove this warning.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:28388) ES...e this warning.:String) [ 
+   ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.5
+
+You are linting "{src,test}/**/*.ts", but all of the files matching the glob pattern 
+"{src,test}/**/*.ts" are ignored.
+
+If you don't want to lint these files, remove the pattern "{src,test}/**/*.ts" from the 
+list of arguments passed to ESLint.
+
+If you do want to lint these files, explicitly list one or more of the files from this 
+glob that you'd like to lint to see more details about why they are ignored.
+
+  * If the file is ignored because of a matching ignore pattern, check global ignores in 
+your config file.
+    https://eslint.org/docs/latest/use/configure/ignore
+
+  * If the file is ignored because no matching configuration was supplied, check file 
+patterns in your config file.
+    https://eslint.org/docs/latest/use/configure/configuration-files#specifying-files-wit
+h-arbitrary-extensions
+
+  * If the file is ignored because it is located outside of the base path, change the 
+location of your config file to be in a parent directory.
+
+
+============================================================
+TYPECHECK RESULT
+============================================================
+node.exe : npm error Missing script: "typecheck"
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm error Missing script: "typecheck":Strin 
+   g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: 
+C:\Users\acer\AppData\Local\npm-cache\_logs\2026-09-19T16_23_29_636Z-debug-0.log
+
+============================================================
+TEST RESULT
+============================================================
+
+> amrutam-backend@1.0.0 test
+> vitest --runInBand
+
+node.exe : file:///A:/amrutam%20backend/node_modules/.pnpm/vitest@2.1.9_@types+node@22.20
+.4_terser@5.51.2/node_modules/vitest/dist/chunks/cac.CB_9Zo9Q.js:403
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (file:///A:/amru...CB_9Zo9Q.js:403:String) [ 
+   ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+          throw new CACError(`Unknown option \`${name.length > 1 ? `--${name}` : 
+`-${name}`}\``);
+                ^
+
+CACError: Unknown option `--runInBand`
+    at Command.checkUnknownOptions (file:///A:/amrutam%20backend/node_modules/.pnpm/vites
+t@2.1.9_@types+node@22.20.4_terser@5.51.2/node_modules/vitest/dist/chunks/cac.CB_9Zo9Q.js
+:403:17)
+    at CAC.runMatchedCommand (file:///A:/amrutam%20backend/node_modules/.pnpm/vitest@2.1.
+9_@types+node@22.20.4_terser@5.51.2/node_modules/vitest/dist/chunks/cac.CB_9Zo9Q.js:603:1
+3)
+    at CAC.parse (file:///A:/amrutam%20backend/node_modules/.pnpm/vitest@2.1.9_@types+nod
+e@22.20.4_terser@5.51.2/node_modules/vitest/dist/chunks/cac.CB_9Zo9Q.js:544:12)
+    at file:///A:/amrutam%20backend/node_modules/.pnpm/vitest@2.1.9_@types+node@22.20.4_t
+erser@5.51.2/node_modules/vitest/dist/cli.js:8:13
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:647:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.18.0
+
+============================================================
+SECURITY NOTE
+============================================================
+Actual .env files, credentials, tokens, private keys, and database passwords were intentionally excluded.
