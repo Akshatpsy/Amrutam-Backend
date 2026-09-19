@@ -118,6 +118,7 @@ model User {
   idempotencyKeys   IdempotencyKey[]
   consultations     Consultation[]
   prescriptions     Prescription[]
+  bookings          Booking[]
 
   @@index([status])
   @@map("users")
@@ -207,8 +208,8 @@ model AvailabilitySlot {
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
 
-  doctor  Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  booking Booking?
+  doctor   Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  bookings Booking[]
 
   @@unique([doctorId, startTime, endTime])
   @@index([doctorId, startTime])
@@ -239,6 +240,8 @@ model Booking {
   payment          Payment?
   previousBooking  Booking?          @relation("BookingReschedule", fields: [rescheduledFromId], references: [id], onDelete: SetNull)
   nextBookings     Booking[]         @relation("BookingReschedule")
+  User             User?             @relation(fields: [userId], references: [id])
+  userId           String?
 
   @@index([patientId, status])
   @@index([patientId, scheduledStart])
@@ -376,4 +379,10 @@ model RefreshToken {
   @@index([expiresAt])
   @@index([revokedAt])
   @@map("refresh_tokens")
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  BOOKED
+  CANCELLED
 }

@@ -1,46 +1,27 @@
-﻿function parseCommaSeparatedList(value: string | undefined): string[] {
-if (!value) {
-return [];
-}
+﻿export default () => ({
+    nodeEnv: process.env.NODE_ENV,
+    port: Number(process.env.PORT ?? 3000),
+    apiPrefix: process.env.API_PREFIX ?? 'api/v1',
+    appName: process.env.APP_NAME ?? 'amrutam-backend',
 
-return value
-.split(',')
-.map((item) => item.trim())
-.filter((item) => item.length > 0);
-}
+    database: {
+        url: process.env.DATABASE_URL,
+    },
 
-export default () => ({
-nodeEnv: process.env.NODE_ENV ?? 'development',
-port: Number(process.env.PORT ?? 3000),
-apiPrefix: process.env.API_PREFIX ?? 'api/v1',
-appName: process.env.APP_NAME ?? 'amrutam-backend',
+    redis: {
+        url: process.env.REDIS_URL,
+    },
 
-database: {
-url: process.env.DATABASE_URL,
-},
+    jwt: {
+        accessSecret: process.env.JWT_ACCESS_SECRET,
+        refreshSecret: process.env.JWT_REFRESH_SECRET,
+        accessTtl: process.env.JWT_ACCESS_TTL ?? '15m',
+        refreshTtlDays: Number(process.env.JWT_REFRESH_TTL_DAYS ?? 7),
+    },
 
-redis: {
-url: process.env.REDIS_URL,
-},
+    security: {
+        bcryptRounds: Number(process.env.BCRYPT_ROUNDS ?? 12),
+    },
 
-jwt: {
-accessSecret: process.env.JWT_ACCESS_SECRET,
-refreshSecret: process.env.JWT_REFRESH_SECRET,
-accessTtl: process.env.JWT_ACCESS_TTL ?? '15m',
-refreshTtlDays: Number(process.env.JWT_REFRESH_TTL_DAYS ?? 7),
-},
-
-security: {
-bcryptRounds: Number(process.env.BCRYPT_ROUNDS ?? 12),
-},
-
-cors: {
-allowedOrigins: parseCommaSeparatedList(process.env.CORS_ALLOWED_ORIGINS),
-},
-
-observability: {
-otlpEndpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-},
-
-logLevel: process.env.LOG_LEVEL ?? 'info',
+    logLevel: process.env.LOG_LEVEL ?? 'info',
 });

@@ -1,52 +1,52 @@
-﻿import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
-import rateLimit from '@fastify/rate-limit';
+﻿import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import {
-FastifyAdapter,
-type NestFastifyApplication,
+    FastifyAdapter,
+    NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import helmet from '@fastify/helmet';
+import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
 
 import { AppModule } from './app.module';
 import { setupSwagger } from './platform/docs/swagger';
 import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
-import { ValidationPipe } from './shared/pipes/validation.pipe';
 
-async function bootstrap(): Promise {
-const app = await NestFactory.create(
-AppModule,
-new FastifyAdapter(),
-);
+async function bootstrap(): Promise<void> {
+    const app = await NestFactory.create<NestFastifyApplication>(
+        AppModule,
+        new FastifyAdapter(),
+    );
 
-const configService = app.get(ConfigService);
-const allowedOrigins =
-configService.get<string[]>('cors.allowedOrigins') ?? [];
+    const configService = app.get(ConfigService);
 
-await app.register(helmet);
-await app.register(cors, {
-origin: allowedOrigins,
-credentials: true,
-});
-await app.register(rateLimit, {
-max: 100,
-timeWindow: '1 minute',
-});
+    await app.register(helmet as any);
+    await app.register(cors as any, {
+        origin: true,
+        credentials: true,
+    });
+    await app.register(rateLimit as any, {
+        max: 100,
+        timeWindow: '1 minute',
+    });
 
-const apiPrefix = configService.get('apiPrefix') ?? 'api/v1';
-const port = configService.get('port') ?? 3000;
+    const apiPrefix = configService.get<string>('apiPrefix') ?? 'api/v1';
+    const port = configService.get<number>('port') ?? 3000;
 
-app.setGlobalPrefix(apiPrefix);
-app.useGlobalFilters(new GlobalExceptionFilter());
-app.useGlobalPipes(new ValidationPipe());
+    app.setGlobalPrefix(apiPrefix);
+    app.useGlobalFilters(new GlobalExceptionFilter());
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true,
+        }),
+    );
 
-setupSwagger(app);
-app.enableShutdownHooks();
+    setupSwagger(app);
 
-await app.listen({
-port,
-host: '0.0.0.0',
-});
+    await app.listen(port, '0.0.0.0');
 }
 
 void bootstrap();

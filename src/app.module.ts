@@ -1,8 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+﻿import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { configuration, envSchema } from './config';
 import { AuthModule } from './modules/auth/auth.module';
+import { BookingsModule } from './modules/bookings/bookings.module';
+import { DoctorsModule } from './modules/doctors/doctors.module';
 import { RedisModule } from './platform/cache/redis.module';
 import { PrismaModule } from './platform/database/prisma/prisma.module';
 import { HealthModule } from './platform/health/health.module';
@@ -11,22 +13,24 @@ import { ObservabilityModule } from './platform/observability/observability.modu
 import { RequestIdMiddleware } from './shared/middleware/request-id.middleware';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            load: [configuration],
-            validate: (config) => envSchema.parse(config),
-        }),
-        LoggerModule,
-        PrismaModule,
-        RedisModule,
-        ObservabilityModule,
-        HealthModule,
-        AuthModule,
-    ],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      validate: (config) => envSchema.parse(config),
+    }),
+    LoggerModule,
+    PrismaModule,
+    RedisModule,
+    ObservabilityModule,
+    HealthModule,
+    AuthModule,
+    DoctorsModule,
+    BookingsModule,
+  ],
 })
 export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer): void {
-        consumer.apply(RequestIdMiddleware).forRoutes('*');
-    }
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
 }

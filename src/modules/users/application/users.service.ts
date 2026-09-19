@@ -1,90 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
-import { createHash, randomUUID } from 'node:crypto';
-
-import type { AuthUser, RefreshTokenPayload } from '../domain/auth.types';
-
-type JwtExpiresIn = NonNullable<JwtSignOptions['expiresIn']>;
+import { Inject, Injectable } from '@nestjs/common';
+import { TOKENS } from '../../../shared/tokens';
+import {
+    UserRepository,
+    UserWithRoles,
+} from '../domain/user.repository';
 
 @Injectable()
-export class TokenService {
+export class UsersService {
     constructor(
-        private readonly jwtService: JwtService,
-        private readonly configService: ConfigService,
+        @Inject(TOKENS.USER_REPOSITORY)
+        private readonly userRepository: UserRepository,
     ) { }
 
-    async createAccessToken(user: {
-        id: string;
+    async findById(id: string): Promise<UserWithRoles | null> {
+        return this.userRepository.findById(id);
+    }
+
+    async findByEmail(email: string): Promise<UserWithRoles | null> {
+        return this.userRepository.findByEmail(email.toLowerCase());
+    }
+
+    async createPatient(input: {
         email: string;
-        roles: string[];
-    }): Promise<string> {
-        const payload: AuthUser = {
-            sub: user.id,
-            email: user.email,
-            roles: user.roles,
-            type: 'access',
-        };
-
-        const expiresIn = (
-            this.configService.get<string>('jwt.accessTtl') ?? '15m'
-        ) as JwtExpiresIn;
-
-        return this.jwtService.signAsync(payload, {
-            secret: this.getRequiredSecret('jwt.accessSecret'),
-            expiresIn,
+        passwordHash: string;
+    }): Promise<UserWithRoles> {
+        const created = await this.userRepository.createPatient({
+            email: input.email.toLowerCase(),
+            passwordHash: input.passwordHash,
         });
-    }
 
-    async createRefreshToken(input: {
-        userId: string;
-        tokenId: string;
-    }): Promise<string> {
-        const payload: RefreshTokenPayload = {
-            sub: input.userId,
-            tokenId: input.tokenId,
-            type: 'refresh',
-        };
+        await this.userRepository.attachRole(created.id, 'PATIENT');
 
-        const expiresInDays =
-            this.configService.get<number>('jwt.refreshTtlDays') ?? 7;
+        const hydrated = await this.userRepository.findById(created.id);
 
-        const expiresIn = `${expiresInDays}d` as JwtExpiresIn;
-
-        return this.jwtService.signAsync(payload, {
-            secret: this.getRequiredSecret('jwt.refreshSecret'),
-            expiresIn,
-        });
-    }
-
-    async createTokenPair(user: {
-        id: string;
-        email: string;
-        roles: string[];
-    }): Promise<{
-        accessToken: string;
-        refreshTokenId: string;
-    }> {
-        const refreshTokenId = randomUUID();
-        const accessToken = await this.createAccessToken(user);
-
-        return {
-            accessToken,
-            refreshTokenId,
-        };
-    }
-
-    hashRefreshToken(token: string): string {
-        return createHash('sha256').update(token).digest('hex');
-    }
-
-    private getRequiredSecret(key: string): string {
-        const secret = this.configService.get<string>(key);
-
-        if (!secret) {
-            throw new Error(`Missing required configuration: ${key}`);
+        if (!hydrated) {
+            throw new Error('Created user not found after role attachment');
         }
 
-        return secret;
+        return hydrated;
     }
 }
